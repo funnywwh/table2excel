@@ -71,6 +71,30 @@ export default class Table2Excel {
     this.download(this.getWorkbook(tables), fileName);
   }
 
+  export2(header,body,fileName = this.defaultFileName){
+    this.download(this.getWorkbook2(header,body), fileName);
+  }
+  getWorkbook2(header,body) {
+    let dataName = '周报';
+    let workbook = { SheetNames: [], Sheets: {} };
+
+    const name = dataName || (index + 1).toString();
+
+    let headerData = tableToData(header);
+    let bodyData = tableToData(body);
+    headerData.cells = [...headerData.cells,...bodyData.cells];
+
+    let worksheet = dataToWorksheet(headerData, typeHandlers);
+
+    if (typeof this.beforeWorksheetAdded === 'function'){
+      worksheet = this.beforeWorksheetAdded(worksheet, name);
+    }
+
+    workbook.SheetNames.push(name);
+    workbook.Sheets[name] = worksheet;
+
+    return workbook;
+  }
   /**
    * Get the XLSX-Workbook object of an array of tables.
    *
